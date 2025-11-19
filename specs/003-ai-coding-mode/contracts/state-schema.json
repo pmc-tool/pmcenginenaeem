@@ -1,0 +1,618 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pmcengine.com/schemas/code-store-state.json",
+  "title": "PMC Engine Code Store State Schema",
+  "description": "Zustand state schema for AI Coding Mode feature (003-ai-coding-mode). Defines the structure of code panel state, operations queue, diff previews, and undo stack.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "codePanel",
+    "operations",
+    "operationQueue",
+    "diffPreviews",
+    "activeDiffId",
+    "undoStack",
+    "currentSnapshotIndex"
+  ],
+  "properties": {
+    "codePanel": {
+      "type": "object",
+      "description": "State of the read-only Code Panel",
+      "required": [
+        "isVisible",
+        "currentCode",
+        "filePath",
+        "language",
+        "selectedLineStart",
+        "selectedLineEnd",
+        "highlightedRanges",
+        "editorOptions",
+        "lastUpdated",
+        "isDirty"
+      ],
+      "properties": {
+        "isVisible": {
+          "type": "boolean",
+          "description": "Whether Code Panel is currently displayed"
+        },
+        "currentCode": {
+          "type": "string",
+          "description": "Current page/section code being displayed",
+          "maxLength": 5000000
+        },
+        "filePath": {
+          "type": "string",
+          "description": "Path to the file being displayed",
+          "pattern": "^[a-zA-Z0-9/_-]+\\.(tsx?|jsx?|css|html)$",
+          "examples": ["pages/home.tsx", "components/Button.tsx"]
+        },
+        "language": {
+          "type": "string",
+          "enum": ["typescript", "javascript", "tsx", "jsx", "css", "html"],
+          "description": "Syntax highlighting language"
+        },
+        "selectedLineStart": {
+          "type": ["integer", "null"],
+          "description": "Start line of current selection (Canvas sync)",
+          "minimum": 1
+        },
+        "selectedLineEnd": {
+          "type": ["integer", "null"],
+          "description": "End line of current selection (Canvas sync)",
+          "minimum": 1
+        },
+        "highlightedRanges": {
+          "type": "array",
+          "description": "Highlighted code ranges from diff preview",
+          "items": {
+            "$ref": "#/definitions/CodeRange"
+          }
+        },
+        "editorOptions": {
+          "type": "object",
+          "description": "Monaco Editor configuration",
+          "required": ["readOnly", "minimap", "lineNumbers", "theme", "fontSize", "wordWrap"],
+          "properties": {
+            "readOnly": {
+              "type": "boolean",
+              "const": true,
+              "description": "Always true per constitution (Section 3.IV)"
+            },
+            "minimap": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" }
+              }
+            },
+            "lineNumbers": {
+              "type": "string",
+              "enum": ["on", "off"]
+            },
+            "theme": {
+              "type": "string",
+              "enum": ["vs-light", "vs-dark"]
+            },
+            "fontSize": {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 24
+            },
+            "wordWrap": {
+              "type": "string",
+              "enum": ["on", "off"]
+            }
+          }
+        },
+        "lastUpdated": {
+          "type": "integer",
+          "description": "Unix timestamp (ms) of last code update",
+          "minimum": 0
+        },
+        "isDirty": {
+          "type": "boolean",
+          "description": "Whether code has pending changes"
+        }
+      }
+    },
+    "operations": {
+      "type": "object",
+      "description": "Code operations indexed by operation ID",
+      "additionalProperties": {
+        "$ref": "#/definitions/CodeOperation"
+      }
+    },
+    "operationQueue": {
+      "type": "array",
+      "description": "Array of operation IDs in queue order (FIFO)",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 10
+    },
+    "diffPreviews": {
+      "type": "object",
+      "description": "Diff previews indexed by diff ID",
+      "additionalProperties": {
+        "$ref": "#/definitions/DiffPreview"
+      }
+    },
+    "activeDiffId": {
+      "type": ["string", "null"],
+      "description": "Currently displayed diff preview ID",
+      "format": "uuid"
+    },
+    "undoStack": {
+      "type": "array",
+      "description": "Undo history sorted by index ascending",
+      "items": {
+        "$ref": "#/definitions/UndoSnapshot"
+      },
+      "maxItems": 50
+    },
+    "currentSnapshotIndex": {
+      "type": "integer",
+      "description": "Index of current state in undo stack",
+      "minimum": -1
+    }
+  },
+  "definitions": {
+    "CodeRange": {
+      "type": "object",
+      "required": ["startLine", "endLine", "type"],
+      "properties": {
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": ["addition", "deletion", "modification"]
+        }
+      }
+    },
+    "CodeOperation": {
+      "type": "object",
+      "required": [
+        "id",
+        "requestId",
+        "status",
+        "currentStep",
+        "stepHistory",
+        "diffPreview",
+        "error",
+        "createdAt",
+        "completedAt",
+        "estimatedDuration"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique operation ID"
+        },
+        "requestId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Associated AICodeRequest.id"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "running", "success", "error"],
+          "description": "Current operation status"
+        },
+        "currentStep": {
+          "type": "string",
+          "description": "Current step message",
+          "examples": ["Analyzing request...", "Generating code...", "Validating changes..."]
+        },
+        "stepHistory": {
+          "type": "array",
+          "description": "All steps with timestamps",
+          "items": {
+            "$ref": "#/definitions/OperationStep"
+          }
+        },
+        "diffPreview": {
+          "oneOf": [
+            { "$ref": "#/definitions/DiffPreview" },
+            { "type": "null" }
+          ],
+          "description": "Generated diff (null until success)"
+        },
+        "error": {
+          "oneOf": [
+            { "$ref": "#/definitions/OperationError" },
+            { "type": "null" }
+          ],
+          "description": "Error details (null unless status === 'error')"
+        },
+        "createdAt": {
+          "type": "integer",
+          "description": "Unix timestamp (ms) when operation started",
+          "minimum": 0
+        },
+        "completedAt": {
+          "type": ["integer", "null"],
+          "description": "Unix timestamp (ms) when operation finished",
+          "minimum": 0
+        },
+        "estimatedDuration": {
+          "type": "integer",
+          "description": "Estimated duration in ms",
+          "minimum": 0
+        }
+      }
+    },
+    "OperationStep": {
+      "type": "object",
+      "required": ["message", "status", "timestamp", "icon"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Step description",
+          "examples": ["Generating code...", "Validating changes..."]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "running", "complete", "failed"]
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Unix timestamp (ms)",
+          "minimum": 0
+        },
+        "icon": {
+          "type": "string",
+          "enum": ["analyze", "generate", "validate", "check", "error"]
+        }
+      }
+    },
+    "OperationError": {
+      "type": "object",
+      "required": ["message", "type", "recoverable", "details"],
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "User-friendly error message"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ambiguous-request",
+            "validation-failed",
+            "network-error",
+            "ai-service-error",
+            "timeout",
+            "unknown"
+          ]
+        },
+        "recoverable": {
+          "type": "boolean",
+          "description": "Whether user can retry"
+        },
+        "details": {
+          "type": ["string", "null"],
+          "description": "Technical details for debugging"
+        }
+      }
+    },
+    "DiffPreview": {
+      "type": "object",
+      "required": [
+        "id",
+        "operationId",
+        "oldCode",
+        "newCode",
+        "changes",
+        "summary",
+        "scope",
+        "status",
+        "createdAt",
+        "respondedAt",
+        "isValid",
+        "validationErrors"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "oldCode": {
+          "type": "string",
+          "description": "Original code before change"
+        },
+        "newCode": {
+          "type": "string",
+          "description": "Proposed code after change"
+        },
+        "changes": {
+          "type": "array",
+          "description": "Line-by-line changes",
+          "items": {
+            "$ref": "#/definitions/DiffChange"
+          },
+          "maxItems": 500
+        },
+        "summary": {
+          "type": "string",
+          "description": "Plain-language explanation",
+          "maxLength": 200,
+          "examples": ["Button color changed to blue"]
+        },
+        "scope": {
+          "$ref": "#/definitions/DiffScope"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "accepted", "rejected"]
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "respondedAt": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "isValid": {
+          "type": "boolean"
+        },
+        "validationErrors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValidationError"
+          }
+        }
+      }
+    },
+    "DiffChange": {
+      "type": "object",
+      "required": ["lineNumber", "type", "oldContent", "newContent"],
+      "properties": {
+        "lineNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": ["addition", "deletion", "modification", "context"]
+        },
+        "oldContent": {
+          "type": ["string", "null"]
+        },
+        "newContent": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "DiffScope": {
+      "type": "object",
+      "required": ["type", "targetName", "filePath"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["page", "section", "element"]
+        },
+        "targetName": {
+          "type": "string"
+        },
+        "filePath": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9/_-]+\\.(tsx?|jsx?|css|html)$"
+        }
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "required": ["severity", "message", "line", "code"],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warning"]
+        },
+        "message": {
+          "type": "string"
+        },
+        "line": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "code": {
+          "type": "string",
+          "examples": ["TS2304", "syntax-error"]
+        }
+      }
+    },
+    "UndoSnapshot": {
+      "type": "object",
+      "required": [
+        "id",
+        "operationId",
+        "codeBefore",
+        "codeAfter",
+        "filePath",
+        "timestamp",
+        "description",
+        "index",
+        "isCurrent"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "codeBefore": {
+          "type": "string",
+          "minLength": 1
+        },
+        "codeAfter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filePath": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9/_-]+\\.(tsx?|jsx?|css|html)$"
+        },
+        "timestamp": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "description": {
+          "type": "string",
+          "examples": ["Changed button color", "Added padding to card"]
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Position in undo stack (0 = oldest)"
+        },
+        "isCurrent": {
+          "type": "boolean",
+          "description": "Whether this is the current state (only one can be true)"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "codePanel": {
+        "isVisible": true,
+        "currentCode": "const Button = () => <button style={{ color: 'blue' }}>Submit</button>",
+        "filePath": "pages/home.tsx",
+        "language": "tsx",
+        "selectedLineStart": 1,
+        "selectedLineEnd": 1,
+        "highlightedRanges": [
+          {
+            "startLine": 1,
+            "endLine": 1,
+            "type": "modification"
+          }
+        ],
+        "editorOptions": {
+          "readOnly": true,
+          "minimap": { "enabled": false },
+          "lineNumbers": "on",
+          "theme": "vs-light",
+          "fontSize": 14,
+          "wordWrap": "off"
+        },
+        "lastUpdated": 1705510805000,
+        "isDirty": false
+      },
+      "operations": {
+        "550e8400-e29b-41d4-a716-446655440000": {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "requestId": "450e8400-e29b-41d4-a716-446655440000",
+          "status": "success",
+          "currentStep": "Complete",
+          "stepHistory": [
+            {
+              "message": "Analyzing request...",
+              "status": "complete",
+              "timestamp": 1705510800000,
+              "icon": "analyze"
+            },
+            {
+              "message": "Generating code...",
+              "status": "complete",
+              "timestamp": 1705510802000,
+              "icon": "generate"
+            },
+            {
+              "message": "Validating changes...",
+              "status": "complete",
+              "timestamp": 1705510804000,
+              "icon": "validate"
+            }
+          ],
+          "diffPreview": {
+            "id": "660e8400-e29b-41d4-a716-446655440000",
+            "operationId": "550e8400-e29b-41d4-a716-446655440000",
+            "oldCode": "<button style={{ color: 'red' }}>Submit</button>",
+            "newCode": "<button style={{ color: 'blue' }}>Submit</button>",
+            "changes": [
+              {
+                "lineNumber": 1,
+                "type": "modification",
+                "oldContent": "<button style={{ color: 'red' }}>Submit</button>",
+                "newContent": "<button style={{ color: 'blue' }}>Submit</button>"
+              }
+            ],
+            "summary": "Button color changed to blue",
+            "scope": {
+              "type": "element",
+              "targetName": "Submit Button",
+              "filePath": "pages/home.tsx"
+            },
+            "status": "accepted",
+            "createdAt": 1705510805000,
+            "respondedAt": 1705510810000,
+            "isValid": true,
+            "validationErrors": []
+          },
+          "error": null,
+          "createdAt": 1705510800000,
+          "completedAt": 1705510805000,
+          "estimatedDuration": 5000
+        }
+      },
+      "operationQueue": [],
+      "diffPreviews": {
+        "660e8400-e29b-41d4-a716-446655440000": {
+          "id": "660e8400-e29b-41d4-a716-446655440000",
+          "operationId": "550e8400-e29b-41d4-a716-446655440000",
+          "oldCode": "<button style={{ color: 'red' }}>Submit</button>",
+          "newCode": "<button style={{ color: 'blue' }}>Submit</button>",
+          "changes": [
+            {
+              "lineNumber": 1,
+              "type": "modification",
+              "oldContent": "<button style={{ color: 'red' }}>Submit</button>",
+              "newContent": "<button style={{ color: 'blue' }}>Submit</button>"
+            }
+          ],
+          "summary": "Button color changed to blue",
+          "scope": {
+            "type": "element",
+            "targetName": "Submit Button",
+            "filePath": "pages/home.tsx"
+          },
+          "status": "accepted",
+          "createdAt": 1705510805000,
+          "respondedAt": 1705510810000,
+          "isValid": true,
+          "validationErrors": []
+        }
+      },
+      "activeDiffId": null,
+      "undoStack": [
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440000",
+          "operationId": "550e8400-e29b-41d4-a716-446655440000",
+          "codeBefore": "<button style={{ color: 'red' }}>Submit</button>",
+          "codeAfter": "<button style={{ color: 'blue' }}>Submit</button>",
+          "filePath": "pages/home.tsx",
+          "timestamp": 1705510810000,
+          "description": "Changed button color",
+          "index": 0,
+          "isCurrent": true
+        }
+      ],
+      "currentSnapshotIndex": 0
+    }
+  ]
+}

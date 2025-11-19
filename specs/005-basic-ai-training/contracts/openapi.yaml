@@ -1,0 +1,467 @@
+openapi: 3.0.3
+info:
+  title: PMC Engine Training API
+  description: API for managing per-site AI training profiles
+  version: 1.0.0
+
+servers:
+  - url: https://api.pmcengine.com/v1
+    description: Production API
+  - url: http://localhost:3000/api/v1
+    description: Local development
+
+paths:
+  /sites/{siteId}/training:
+    get:
+      summary: Get training profile for a site
+      description: Retrieves the complete training profile for the specified site
+      operationId: getTrainingProfile
+      tags:
+        - Training
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique site identifier
+      responses:
+        '200':
+          description: Training profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainingProfile'
+        '404':
+          description: Training profile not found (site has no training data)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - invalid or missing authentication
+        '403':
+          description: Forbidden - user does not have access to this site
+
+    put:
+      summary: Create or update training profile
+      description: Creates a new training profile or updates existing one for the site
+      operationId: updateTrainingProfile
+      tags:
+        - Training
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainingProfile'
+      responses:
+        '200':
+          description: Training profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  profile:
+                    $ref: '#/components/schemas/TrainingProfile'
+                  lastUpdated:
+                    type: string
+                    format: date-time
+        '400':
+          description: Invalid request body or validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+    delete:
+      summary: Delete training profile
+      description: Permanently deletes the training profile for the site
+      operationId: deleteTrainingProfile
+      tags:
+        - Training
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Training profile deleted successfully
+        '404':
+          description: Training profile not found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /sites/{siteId}/training/upload:
+    post:
+      summary: Upload training asset file
+      description: Uploads logo, favicon, or other training-related files
+      operationId: uploadTrainingFile
+      tags:
+        - Training
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fileType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [primary-logo, dark-logo, favicon]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: CDN URL of uploaded file
+                  metadata:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                      size:
+                        type: integer
+                      width:
+                        type: integer
+                      height:
+                        type: integer
+        '400':
+          description: Invalid file (wrong type, too large, corrupted)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '413':
+          description: File too large
+
+components:
+  schemas:
+    TrainingProfile:
+      type: object
+      required:
+        - siteId
+        - createdAt
+        - lastUpdated
+        - version
+        - completionStatus
+      properties:
+        siteId:
+          type: string
+          example: "site_abc123"
+        createdAt:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          example: 1
+        completionStatus:
+          $ref: '#/components/schemas/CompletionStatus'
+        section1_brandBasics:
+          $ref: '#/components/schemas/BrandBasics'
+        section2_visualIdentity:
+          $ref: '#/components/schemas/VisualIdentity'
+        section3_voiceTone:
+          $ref: '#/components/schemas/VoiceTone'
+        section4_offerings:
+          $ref: '#/components/schemas/Offerings'
+        section5_contact:
+          $ref: '#/components/schemas/Contact'
+        section6_aiBehavior:
+          $ref: '#/components/schemas/AIBehavior'
+
+    CompletionStatus:
+      type: object
+      properties:
+        overall:
+          type: string
+          example: "3/6"
+        sections:
+          type: object
+          additionalProperties:
+            type: string
+            enum: [not-started, partial, complete]
+
+    BrandBasics:
+      type: object
+      required:
+        - brandName
+        - elevatorPitch
+        - description
+        - industry
+      properties:
+        brandName:
+          type: string
+          maxLength: 100
+          example: "Acme Solutions"
+        tagline:
+          type: string
+          maxLength: 150
+          example: "Building the future"
+        elevatorPitch:
+          type: string
+          minLength: 10
+          maxLength: 250
+          example: "We help businesses automate workflows with AI"
+        description:
+          type: string
+          minLength: 50
+          maxLength: 500
+          example: "Acme Solutions is a SaaS company..."
+        industry:
+          type: string
+          maxLength: 50
+          example: "SaaS"
+        location:
+          type: string
+          maxLength: 100
+          example: "San Francisco, CA"
+
+    VisualIdentity:
+      type: object
+      required:
+        - darkModeSupport
+      properties:
+        primaryLogo:
+          $ref: '#/components/schemas/FileData'
+        darkModeLogo:
+          $ref: '#/components/schemas/FileData'
+        favicon:
+          $ref: '#/components/schemas/FileData'
+        darkModeSupport:
+          type: string
+          enum: [light-only, dark-only, both]
+        defaultMode:
+          type: string
+          enum: [light, dark]
+          nullable: true
+        primaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#EA2724"
+        secondaryColor:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#1A1A1A"
+
+    FileData:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        size:
+          type: integer
+        url:
+          type: string
+          description: CDN URL (backend) or base64 data URL (localStorage)
+        uploadedAt:
+          type: string
+          format: date-time
+
+    VoiceTone:
+      type: object
+      properties:
+        formalCasualLevel:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        playfulSeriousLevel:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        toneDescription:
+          type: string
+          maxLength: 200
+        emojiUsage:
+          type: string
+          enum: [never, sometimes, often]
+          nullable: true
+        wordsToUse:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 20
+        wordsToAvoid:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 20
+
+    Offerings:
+      type: object
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+          maxItems: 20
+        primaryCTA:
+          type: string
+          maxLength: 50
+          example: "Get Started"
+
+    Service:
+      type: object
+      required:
+        - id
+        - name
+        - order
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 200
+        order:
+          type: integer
+          minimum: 0
+
+    Contact:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          maxLength: 250
+          nullable: true
+        preferredMethod:
+          type: string
+          enum: [call, whatsapp, email, form]
+          nullable: true
+        socialLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialLink'
+          maxItems: 10
+
+    SocialLink:
+      type: object
+      required:
+        - id
+        - platform
+        - url
+        - order
+      properties:
+        id:
+          type: string
+          format: uuid
+        platform:
+          type: string
+          enum: [facebook, instagram, twitter, linkedin, youtube, tiktok, pinterest, other]
+        url:
+          type: string
+          format: uri
+        order:
+          type: integer
+          minimum: 0
+
+    AIBehavior:
+      type: object
+      properties:
+        rewriteStrength:
+          type: string
+          enum: [light, balanced, heavy]
+          nullable: true
+        sensitiveAreas:
+          type: array
+          items:
+            type: string
+            enum: [pricing, legal, testimonials, other]
+          maxItems: 4
+        customSensitiveText:
+          type: string
+          maxLength: 100
+        alwaysKeepInstructions:
+          type: string
+          maxLength: 300
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+              code:
+                type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

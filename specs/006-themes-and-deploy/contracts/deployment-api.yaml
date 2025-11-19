@@ -1,0 +1,377 @@
+openapi: 3.0.3
+info:
+  title: PMC Engine - Deployment Orchestration API
+  version: 1.0.0
+  description: |
+    API for managing theme deployments in PMC Engine Editor.
+
+    **Note**: This is a contract spec for future backend implementation. MVP uses mock deployment service with client-side simulation.
+
+servers:
+  - url: https://api.pmcengine.com/v1
+    description: Production API
+  - url: http://localhost:3000/api/v1
+    description: Local development
+
+paths:
+  /deployments:
+    post:
+      summary: Create new deployment session
+      operationId: createDeployment
+      tags: [Deployments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - themeId
+                - siteId
+              properties:
+                themeId:
+                  type: string
+                  format: uuid
+                  description: Theme to deploy
+                siteId:
+                  type: string
+                  format: uuid
+                  description: Target site
+      responses:
+        '201':
+          description: Deployment session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentSession'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Deployment already in progress for this site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /deployments/{deploymentId}:
+    get:
+      summary: Get deployment session status
+      operationId: getDeployment
+      tags: [Deployments]
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deployment session details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentSession'
+        '404':
+          description: Deployment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /deployments/{deploymentId}/stream:
+    get:
+      summary: Stream real-time deployment progress (SSE)
+      operationId: streamDeployment
+      tags: [Deployments]
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Server-Sent Events stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Event types:
+                  - step_update: Step status changed
+                  - log: New log entry
+                  - complete: Deployment finished
+                example: |
+                  event: step_update
+                  data: {"step": "detecting_stack", "status": "in_progress", "message": "Detecting tech stack..."}
+
+                  event: log
+                  data: {"level": "info", "message": "> npm run build", "timestamp": "2025-11-18T15:30:45Z"}
+
+                  event: complete
+                  data: {"status": "success", "deployedUrl": "https://preview.pmcengine.com/site-123"}
+        '404':
+          description: Deployment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /deployments/{deploymentId}/logs:
+    get:
+      summary: Retrieve deployment logs
+      operationId: getDeploymentLogs
+      tags: [Deployments]
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: level
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [info, warning, error, debug]
+          description: Filter by log level
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          description: Maximum number of log entries
+      responses:
+        '200':
+          description: Deployment logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeploymentLog'
+        '404':
+          description: Deployment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /deployments/{deploymentId}/cancel:
+    post:
+      summary: Cancel deployment (optional feature)
+      operationId: cancelDeployment
+      tags: [Deployments]
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deployment cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentSession'
+        '400':
+          description: Deployment cannot be cancelled (already complete/failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Deployment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    DeploymentSession:
+      type: object
+      required:
+        - id
+        - themeId
+        - siteId
+        - userId
+        - currentStep
+        - steps
+        - buildLogs
+        - finalState
+        - startedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        themeId:
+          type: string
+          format: uuid
+        siteId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        currentStep:
+          type: string
+          enum: [detecting_stack, preparing_env, building, deploying, done]
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepStatus'
+        techStackDetected:
+          type: string
+          nullable: true
+          example: "Next.js 13.4"
+        buildLogs:
+          type: array
+          items:
+            type: string
+          maxItems: 1000
+          description: Raw terminal output lines (ephemeral, max 1000)
+        errorDetails:
+          $ref: '#/components/schemas/ErrorDetails'
+          nullable: true
+        finalState:
+          type: string
+          enum: [success, failed, cancelled, in_progress]
+        deployedUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://preview.pmcengine.com/site-123"
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        durationMs:
+          type: integer
+          nullable: true
+          description: Total deployment time in milliseconds
+
+    StepStatus:
+      type: object
+      required:
+        - name
+        - status
+        - message
+      properties:
+        name:
+          type: string
+          enum: [detecting_stack, preparing_env, building, deploying, done]
+        status:
+          type: string
+          enum: [idle, in_progress, success, error]
+        message:
+          type: string
+          description: Human-readable status text
+        startedAt:
+          type: string
+          format: date-time
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        durationMs:
+          type: integer
+          nullable: true
+          description: Time spent on this step
+
+    ErrorDetails:
+      type: object
+      required:
+        - failingStep
+        - errorMessage
+        - errorSnippet
+      properties:
+        failingStep:
+          type: string
+          enum: [detecting_stack, preparing_env, building, deploying]
+        errorMessage:
+          type: string
+          description: High-level error description
+        errorSnippet:
+          type: string
+          description: Extract from logs (5-10 lines around error)
+        errorCode:
+          type: string
+          nullable: true
+          example: "BUILD_FAILED"
+        suggestedAction:
+          type: string
+          nullable: true
+          description: What user should do next
+
+    DeploymentLog:
+      type: object
+      required:
+        - id
+        - deploymentSessionId
+        - timestamp
+        - logLevel
+        - logSource
+        - message
+      properties:
+        id:
+          type: string
+          format: uuid
+        deploymentSessionId:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 with milliseconds
+        logLevel:
+          type: string
+          enum: [info, warning, error, debug]
+        logSource:
+          type: string
+          enum: [system, build_tool, deployment_service]
+        message:
+          type: string
+          maxLength: 10000
+          description: Raw output from build tool or system
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

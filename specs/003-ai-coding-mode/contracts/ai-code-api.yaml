@@ -1,0 +1,672 @@
+openapi: 3.1.0
+info:
+  title: PMC Engine AI Code Generation API
+  version: 1.0.0
+  description: |
+    AI-powered code generation service for PMC Engine Editor.
+    Supports natural language code requests with Server-Sent Events (SSE) for real-time progress updates.
+
+    Feature: 003-ai-coding-mode
+    Created: 2025-01-17
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://api.pmcengine.com
+    description: Production API
+
+paths:
+  /code/generate:
+    post:
+      summary: Generate code from natural language request
+      description: |
+        Accepts a natural language code change request and returns Server-Sent Events (SSE)
+        with progressive updates. Final event contains the generated diff preview.
+
+        Implements FR-004, FR-005, FR-006, FR-007 from spec.md
+      operationId: generateCode
+      tags:
+        - Code Generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CodeGenerationRequest'
+            examples:
+              simpleChange:
+                summary: Simple color change
+                value:
+                  requestText: "Change the button color to blue"
+                  scope:
+                    type: "element"
+                    targetId: "btn-submit"
+                    targetName: "Submit Button"
+                    filePath: "pages/home.tsx"
+                  context:
+                    currentCode: "const Button = () => <button style={{ color: 'red' }}>Submit</button>"
+                    selectedElement: "btn-submit"
+                    pageMetadata:
+                      pageId: "home"
+                      pageName: "Home Page"
+                      componentLibrary: ["Button", "Input", "Card"]
+                      styleVariables:
+                        primaryColor: "#EA2724"
+              complexChange:
+                summary: Multiple element modification
+                value:
+                  requestText: "Make the headline larger and add padding to the card"
+                  scope:
+                    type: "section"
+                    targetId: "hero-section"
+                    targetName: "Hero Section"
+                    filePath: "pages/home.tsx"
+                  context:
+                    currentCode: "<section><h1>Welcome</h1><Card>Content</Card></section>"
+                    selectedElement: null
+                    pageMetadata:
+                      pageId: "home"
+                      pageName: "Home Page"
+                      componentLibrary: ["Card", "Heading"]
+                      styleVariables: {}
+
+      responses:
+        '200':
+          description: |
+            Server-Sent Events stream with progressive updates.
+            Stream format: text/event-stream
+
+            Event types:
+            - `progress`: Operation step update
+            - `complete`: Final diff preview (closes stream)
+            - `error`: Error occurred (closes stream)
+          content:
+            text/event-stream:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ProgressEvent'
+                  - $ref: '#/components/schemas/CompleteEvent'
+                  - $ref: '#/components/schemas/ErrorEvent'
+              examples:
+                progressEvent:
+                  summary: Progress update event
+                  value: |
+                    event: progress
+                    data: {"operationId":"550e8400-e29b-41d4-a716-446655440000","step":"Analyzing request...","icon":"analyze","timestamp":1705510800000}
+
+                completeEvent:
+                  summary: Completion event with diff
+                  value: |
+                    event: complete
+                    data: {"operationId":"550e8400-e29b-41d4-a716-446655440000","diffPreview":{"id":"660e8400-e29b-41d4-a716-446655440000","operationId":"550e8400-e29b-41d4-a716-446655440000","oldCode":"<button style={{ color: 'red' }}>Submit</button>","newCode":"<button style={{ color: 'blue' }}>Submit</button>","changes":[{"lineNumber":1,"type":"modification","oldContent":"<button style={{ color: 'red' }}>Submit</button>","newContent":"<button style={{ color: 'blue' }}>Submit</button>"}],"summary":"Button color changed to blue","scope":{"type":"element","targetName":"Submit Button","filePath":"pages/home.tsx"},"status":"pending","createdAt":1705510805000,"respondedAt":null,"isValid":true,"validationErrors":[]}}
+
+                errorEvent:
+                  summary: Error event
+                  value: |
+                    event: error
+                    data: {"operationId":"550e8400-e29b-41d4-a716-446655440000","error":{"message":"Could not locate button element - please be more specific","type":"ambiguous-request","recoverable":true,"details":null}}
+
+        '400':
+          description: Invalid request (missing fields, malformed data)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid request"
+                message: "Field 'requestText' is required"
+                code: "INVALID_REQUEST"
+
+        '429':
+          description: Rate limit exceeded (max 10 concurrent requests per plan.md)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Rate limit exceeded"
+                message: "Maximum 10 concurrent code generation requests allowed"
+                code: "RATE_LIMIT"
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Internal server error"
+                message: "AI service temporarily unavailable"
+                code: "SERVICE_ERROR"
+
+        '503':
+          description: Service unavailable (AI service down)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Service unavailable"
+                message: "AI code generation service is currently unavailable. Please try again later."
+                code: "SERVICE_UNAVAILABLE"
+
+  /code/validate:
+    post:
+      summary: Validate generated code
+      description: |
+        Validates code syntax and checks for breaking changes using TypeScript + ESLint.
+        Implements FR-014 from spec.md
+      operationId: validateCode
+      tags:
+        - Code Validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CodeValidationRequest'
+            examples:
+              validCode:
+                summary: Valid TypeScript code
+                value:
+                  code: "const Button = () => <button>Click me</button>"
+                  language: "tsx"
+                  filePath: "components/Button.tsx"
+              invalidCode:
+                summary: Invalid code with syntax error
+                value:
+                  code: "const Button = () => <button>Click me</buton>"
+                  language: "tsx"
+                  filePath: "components/Button.tsx"
+
+      responses:
+        '200':
+          description: Validation completed (may contain errors/warnings)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeValidationResponse'
+              examples:
+                valid:
+                  summary: No errors
+                  value:
+                    isValid: true
+                    errors: []
+                    warnings: []
+                invalid:
+                  summary: Syntax error found
+                  value:
+                    isValid: false
+                    errors:
+                      - severity: "error"
+                        message: "JSX element 'button' has no matching closing tag"
+                        line: 1
+                        code: "TS2807"
+                    warnings: []
+
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /code/diff:
+    post:
+      summary: Generate diff between two code versions
+      description: |
+        Generates a detailed line-by-line diff using Myers' algorithm.
+        Used internally by /code/generate but exposed for testing.
+        Implements diff visualization requirements from FR-007, FR-008
+      operationId: generateDiff
+      tags:
+        - Code Diff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiffRequest'
+            example:
+              oldCode: "const x = 1;"
+              newCode: "const x = 2;"
+              filePath: "utils/constants.ts"
+
+      responses:
+        '200':
+          description: Diff generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiffResponse'
+              example:
+                changes:
+                  - lineNumber: 1
+                    type: "modification"
+                    oldContent: "const x = 1;"
+                    newContent: "const x = 2;"
+                totalAdded: 0
+                totalRemoved: 0
+                totalModified: 1
+
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CodeGenerationRequest:
+      type: object
+      required:
+        - requestText
+        - scope
+        - context
+      properties:
+        requestText:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Natural language description of desired code change
+          example: "Change the button color to blue"
+        scope:
+          $ref: '#/components/schemas/RequestScope'
+        context:
+          $ref: '#/components/schemas/RequestContext'
+
+    RequestScope:
+      type: object
+      required:
+        - type
+        - targetName
+        - filePath
+      properties:
+        type:
+          type: string
+          enum: [page, section, element, global]
+          description: What kind of entity to modify
+        targetId:
+          type: string
+          nullable: true
+          description: Unique ID of target (null for global changes)
+          example: "btn-submit"
+        targetName:
+          type: string
+          description: Human-readable name of target
+          example: "Submit Button"
+        filePath:
+          type: string
+          pattern: '^[a-zA-Z0-9/_-]+\.(tsx?|jsx?|css|html)$'
+          description: File path to modify
+          example: "pages/home.tsx"
+
+    RequestContext:
+      type: object
+      required:
+        - currentCode
+        - pageMetadata
+      properties:
+        currentCode:
+          type: string
+          description: Current code state before modification
+          example: "const Button = () => <button>Submit</button>"
+        selectedElement:
+          type: string
+          nullable: true
+          description: ID of Canvas-selected element (null if none)
+          example: "btn-submit"
+        pageMetadata:
+          $ref: '#/components/schemas/PageMetadata'
+
+    PageMetadata:
+      type: object
+      required:
+        - pageId
+        - pageName
+        - componentLibrary
+        - styleVariables
+      properties:
+        pageId:
+          type: string
+          example: "home"
+        pageName:
+          type: string
+          example: "Home Page"
+        componentLibrary:
+          type: array
+          items:
+            type: string
+          description: Available components for use
+          example: ["Button", "Input", "Card"]
+        styleVariables:
+          type: object
+          additionalProperties:
+            type: string
+          description: CSS variables available
+          example:
+            primaryColor: "#EA2724"
+
+    ProgressEvent:
+      type: object
+      required:
+        - operationId
+        - step
+        - icon
+        - timestamp
+      properties:
+        operationId:
+          type: string
+          format: uuid
+          description: UUID of the operation
+        step:
+          type: string
+          description: Current step message
+          example: "Analyzing request..."
+        icon:
+          type: string
+          enum: [analyze, generate, validate, check, error]
+          description: Icon to display for this step
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp in milliseconds
+          example: 1705510800000
+
+    CompleteEvent:
+      type: object
+      required:
+        - operationId
+        - diffPreview
+      properties:
+        operationId:
+          type: string
+          format: uuid
+        diffPreview:
+          $ref: '#/components/schemas/DiffPreview'
+
+    ErrorEvent:
+      type: object
+      required:
+        - operationId
+        - error
+      properties:
+        operationId:
+          type: string
+          format: uuid
+        error:
+          $ref: '#/components/schemas/OperationError'
+
+    DiffPreview:
+      type: object
+      required:
+        - id
+        - operationId
+        - oldCode
+        - newCode
+        - changes
+        - summary
+        - scope
+        - status
+        - createdAt
+        - isValid
+        - validationErrors
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique diff preview ID
+        operationId:
+          type: string
+          format: uuid
+          description: Parent operation ID
+        oldCode:
+          type: string
+          description: Original code before change
+        newCode:
+          type: string
+          description: Proposed code after change
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiffChange'
+          description: Line-by-line changes
+          maxItems: 500
+        summary:
+          type: string
+          maxLength: 200
+          description: Plain-language summary of changes
+          example: "Button color changed to blue"
+        scope:
+          $ref: '#/components/schemas/DiffScope'
+        status:
+          type: string
+          enum: [pending, accepted, rejected]
+          description: User response status
+        createdAt:
+          type: integer
+          format: int64
+          description: Unix timestamp when diff was created
+        respondedAt:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp when user accepted/rejected
+        isValid:
+          type: boolean
+          description: Whether code passed validation
+        validationErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: Validation errors (if any)
+
+    DiffChange:
+      type: object
+      required:
+        - lineNumber
+        - type
+      properties:
+        lineNumber:
+          type: integer
+          minimum: 1
+          description: Line number in final code
+        type:
+          type: string
+          enum: [addition, deletion, modification, context]
+          description: Type of change
+        oldContent:
+          type: string
+          nullable: true
+          description: Content before (null for additions)
+        newContent:
+          type: string
+          nullable: true
+          description: Content after (null for deletions)
+
+    DiffScope:
+      type: object
+      required:
+        - type
+        - targetName
+        - filePath
+      properties:
+        type:
+          type: string
+          enum: [page, section, element]
+        targetName:
+          type: string
+          example: "Submit Button"
+        filePath:
+          type: string
+          example: "pages/home.tsx"
+
+    ValidationError:
+      type: object
+      required:
+        - severity
+        - message
+        - code
+      properties:
+        severity:
+          type: string
+          enum: [error, warning]
+        message:
+          type: string
+          description: User-friendly error message
+          example: "JSX element has no matching closing tag"
+        line:
+          type: integer
+          nullable: true
+          description: Line number where error occurred
+        code:
+          type: string
+          description: Error code (e.g., 'TS2304', 'syntax-error')
+          example: "TS2807"
+
+    OperationError:
+      type: object
+      required:
+        - message
+        - type
+        - recoverable
+      properties:
+        message:
+          type: string
+          description: User-friendly error message
+          example: "Could not locate button element - please be more specific"
+        type:
+          type: string
+          enum:
+            - ambiguous-request
+            - validation-failed
+            - network-error
+            - ai-service-error
+            - timeout
+            - unknown
+          description: Error category
+        recoverable:
+          type: boolean
+          description: Whether user can retry the request
+        details:
+          type: string
+          nullable: true
+          description: Technical details for debugging (not shown to user)
+
+    CodeValidationRequest:
+      type: object
+      required:
+        - code
+        - language
+        - filePath
+      properties:
+        code:
+          type: string
+          description: Code to validate
+        language:
+          type: string
+          enum: [typescript, javascript, tsx, jsx, css, html]
+          description: Syntax language
+        filePath:
+          type: string
+          description: File path (for context)
+          example: "components/Button.tsx"
+
+    CodeValidationResponse:
+      type: object
+      required:
+        - isValid
+        - errors
+        - warnings
+      properties:
+        isValid:
+          type: boolean
+          description: Whether code has no errors
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: Critical errors that prevent code from running
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: Non-critical issues (best practices, style)
+
+    DiffRequest:
+      type: object
+      required:
+        - oldCode
+        - newCode
+        - filePath
+      properties:
+        oldCode:
+          type: string
+          description: Original code
+        newCode:
+          type: string
+          description: Modified code
+        filePath:
+          type: string
+          description: File path (for context)
+
+    DiffResponse:
+      type: object
+      required:
+        - changes
+        - totalAdded
+        - totalRemoved
+        - totalModified
+      properties:
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiffChange'
+        totalAdded:
+          type: integer
+          description: Count of added lines
+        totalRemoved:
+          type: integer
+          description: Count of removed lines
+        totalModified:
+          type: integer
+          description: Count of modified lines
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - code
+      properties:
+        error:
+          type: string
+          description: Error type
+          example: "Invalid request"
+        message:
+          type: string
+          description: Detailed error message
+          example: "Field 'requestText' is required"
+        code:
+          type: string
+          description: Machine-readable error code
+          example: "INVALID_REQUEST"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated users
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Code Generation
+    description: AI-powered code generation from natural language
+  - name: Code Validation
+    description: Syntax and best practices validation
+  - name: Code Diff
+    description: Diff generation between code versions

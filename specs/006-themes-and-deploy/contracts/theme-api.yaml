@@ -1,0 +1,275 @@
+openapi: 3.0.3
+info:
+  title: PMC Engine - Theme Management API
+  version: 1.0.0
+  description: |
+    API for managing themes in PMC Engine Editor (purchased themes from PackMyCode and user-uploaded themes).
+
+    **Note**: This is a contract spec for future backend implementation. MVP uses localStorage + mock services.
+
+servers:
+  - url: https://api.pmcengine.com/v1
+    description: Production API
+  - url: http://localhost:3000/api/v1
+    description: Local development
+
+paths:
+  /themes:
+    get:
+      summary: List all themes for a site
+      operationId: listThemes
+      tags: [Themes]
+      parameters:
+        - name: siteId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: source
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [purchased, uploaded]
+          description: Filter by theme source
+        - name: deploymentStatus
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [available, active, failed, deploying]
+      responses:
+        '200':
+          description: List of themes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  themes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Theme'
+
+    post:
+      summary: Create theme from upload
+      operationId: createTheme
+      tags: [Themes]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Theme .zip file
+                siteId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Theme created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Theme'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /themes/{themeId}:
+    get:
+      summary: Get theme details
+      operationId: getTheme
+      tags: [Themes]
+      parameters:
+        - name: themeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Theme details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Theme'
+        '404':
+          description: Theme not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete theme
+      operationId: deleteTheme
+      tags: [Themes]
+      parameters:
+        - name: themeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Theme deleted
+        '404':
+          description: Theme not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /purchased-themes:
+    get:
+      summary: Sync purchased themes from PackMyCode
+      operationId: syncPurchasedThemes
+      tags: [Themes]
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Purchased themes fetched from PackMyCode
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  themes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Theme'
+                  syncedAt:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    Theme:
+      type: object
+      required:
+        - id
+        - name
+        - version
+        - framework
+        - source
+        - deploymentStatus
+        - siteId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        version:
+          type: string
+          pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+          example: "1.2.0"
+        framework:
+          type: string
+          enum: [next.js, gatsby, laravel, wordpress, static]
+        thumbnailUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        source:
+          type: string
+          enum: [purchased, uploaded]
+        sourceMetadata:
+          oneOf:
+            - $ref: '#/components/schemas/PurchasedMetadata'
+            - $ref: '#/components/schemas/UploadedMetadata'
+        deploymentStatus:
+          type: string
+          enum: [available, active, failed, deploying]
+        siteId:
+          type: string
+          format: uuid
+        uploadedBy:
+          type: string
+          format: uuid
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PurchasedMetadata:
+      type: object
+      properties:
+        purchaseId:
+          type: string
+        purchasedAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+          format: uri
+        marketplaceUrl:
+          type: string
+          format: uri
+
+    UploadedMetadata:
+      type: object
+      properties:
+        uploadSessionId:
+          type: string
+          format: uuid
+        originalFilename:
+          type: string
+        fileSizeBytes:
+          type: integer
+          minimum: 1
+          maximum: 52428800
+        storagePath:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
