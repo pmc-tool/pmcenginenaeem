@@ -1,0 +1,202 @@
+/**
+ * Stepper Component Styles
+ */
+
+.stepper {
+  display: flex;
+}
+
+.stepper--vertical {
+  flex-direction: column;
+  gap: 0;
+}
+
+.stepper--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Step */
+.stepper__step {
+  display: flex;
+  position: relative;
+}
+
+.stepper--vertical .stepper__step {
+  flex-direction: column;
+}
+
+.stepper--horizontal .stepper__step {
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+}
+
+.stepper__step-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.stepper--horizontal .stepper__step-content {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Icon */
+.stepper__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.stepper__icon--idle {
+  background: #F5F5F5;
+  color: #666666;
+  border: 2px solid #E5E5E5;
+}
+
+.stepper__icon--in-progress {
+  background: #FFF5F5;
+  color: #EA2724;
+  border: 2px solid #EA2724;
+}
+
+.stepper__icon--completed {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 2px solid #10B981;
+}
+
+.stepper__icon--error {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 2px solid #EF4444;
+}
+
+/* Spinner for in-progress state */
+.stepper__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #FFF5F5;
+  border-top-color: #EA2724;
+  border-radius: 50%;
+  animation: stepperSpinnerRotate 0.8s linear infinite;
+}
+
+@keyframes stepperSpinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text */
+.stepper__step-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepper__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1A1A1A;
+  line-height: 1.4;
+}
+
+.stepper__step--idle .stepper__label {
+  color: #666666;
+}
+
+.stepper__step--in-progress .stepper__label {
+  color: #EA2724;
+  font-weight: 600;
+}
+
+.stepper__step--completed .stepper__label {
+  color: #065F46;
+}
+
+.stepper__step--error .stepper__label {
+  color: #991B1B;
+}
+
+.stepper__description {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #666666;
+  line-height: 1.4;
+}
+
+/* Connector */
+.stepper__connector {
+  position: absolute;
+  background: #E5E5E5;
+}
+
+.stepper--vertical .stepper__connector {
+  left: 1rem;
+  top: 2.5rem;
+  width: 2px;
+  height: calc(100% - 2rem);
+}
+
+.stepper--horizontal .stepper__connector {
+  top: 1rem;
+  left: calc(50% + 1rem);
+  width: calc(100% - 2rem);
+  height: 2px;
+}
+
+.stepper__step--completed .stepper__connector {
+  background: #10B981;
+}
+
+/* Active state */
+.stepper__step--active .stepper__icon {
+  box-shadow: 0 0 0 4px rgba(234, 39, 36, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .stepper--horizontal {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .stepper--horizontal .stepper__step {
+    align-items: flex-start;
+  }
+
+  .stepper--horizontal .stepper__step-content {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .stepper--horizontal .stepper__connector {
+    left: 1rem;
+    top: 2.5rem;
+    width: 2px;
+    height: calc(100% - 2rem);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .stepper__spinner {
+    animation: none;
+    border-top-color: #EA2724;
+  }
+}

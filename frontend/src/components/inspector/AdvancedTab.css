@@ -1,0 +1,51 @@
+/**
+ * AdvancedTab Styles
+ * Constitutional requirement: Visual de-emphasis with 12px font and #666666 color
+ */
+
+@import '../../styles/tokens.css';
+
+.advanced-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* Visual de-emphasis per constitutional requirement */
+  font-size: 12px;
+  color: #666666;
+}
+
+.advanced-tab__content {
+  flex: 1;
+  padding: var(--space-4);
+}
+
+.advanced-tab__placeholder {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.advanced-tab__placeholder p {
+  color: #666666;
+}
+
+.advanced-tab__hint {
+  margin-top: var(--space-2);
+  font-size: 12px;
+  color: #888888;
+}
+
+.advanced-tab__warning {
+  margin-top: var(--space-6);
+  padding: var(--space-3);
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: #666666;
+  text-align: left;
+}
+
+.advanced-tab__warning strong {
+  color: #ff9800;
+  font-weight: var(--font-weight-semibold);
+}

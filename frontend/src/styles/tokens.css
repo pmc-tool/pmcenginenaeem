@@ -1,0 +1,96 @@
+/**
+ * Design Tokens - PMC Engine Editor Constitutional Values
+ * Source: .specify/memory/constitution.md Section 4: Visual Language
+ */
+
+:root {
+  /* Spacing - 8px base unit */
+  --space-0: 0;
+  --space-1: 4px;    /* 0.5x base */
+  --space-2: 8px;    /* 1x base */
+  --space-3: 12px;   /* 1.5x base */
+  --space-4: 16px;   /* 2x base */
+  --space-6: 24px;   /* 3x base */
+  --space-8: 32px;   /* 4x base */
+  --space-12: 48px;  /* 6x base */
+  --space-16: 64px;  /* 8x base */
+
+  /* Typography - Inter font family */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Font sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Colors - Constitutional palette */
+  --color-white: #FFFFFF;
+  --color-background: #F5F5F5;
+  --color-accent: #EA2724;
+  --color-text-primary: #000000;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-border: #E0E0E0;
+  --color-border-hover: #CCCCCC;
+
+  /* Semantic colors */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Focus state - Constitutional requirements */
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 2px;
+  --focus-outline-color: var(--color-accent);
+
+  /* Border radius */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Z-index layers */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-drawer: 1060; /* Mobile drawer (left rail) */
+  --z-bottomsheet: 1070; /* Bottom sheets (pages, inspector, chat, settings) */
+  --z-popover: 1080;
+  --z-tooltip: 1090;
+  --z-fab: 1100; /* Floating action button */
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shell-specific dimensions */
+  --shell-top-bar-height: 64px;
+  --shell-left-rail-width: 60px;
+  --shell-page-sidebar-width: 280px;
+  --shell-inspector-width-default: 360px;
+  --shell-inspector-width-min: 280px;
+  --shell-inspector-width-max: 600px;
+}

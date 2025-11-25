@@ -1,0 +1,212 @@
+/**
+ * Layout CSS - Dashboard Shell Grid Structure
+ * Implements consistent 5-region layout per constitutional requirements
+ */
+
+@import './tokens.css';
+
+/* CSS Reset for shell consistency */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Shell Grid Layout */
+.shell {
+  display: grid;
+  grid-template-areas:
+    'topbar topbar topbar topbar'
+    'leftrail sidebar canvas inspector';
+  grid-template-columns: var(--shell-left-rail-width) auto 1fr auto;
+  grid-template-rows: var(--shell-top-bar-height) 1fr;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--color-background);
+  position: relative;
+}
+
+/* Top Bar */
+.shell-topbar {
+  grid-area: topbar;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  z-index: var(--z-sticky);
+}
+
+/* Left Rail */
+.shell-leftrail {
+  grid-area: leftrail;
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-border);
+  z-index: 200;
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Page Sidebar */
+.shell-sidebar {
+  grid-area: sidebar;
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  z-index: var(--z-base);
+}
+
+/* Canvas - Takes canvas grid area */
+.shell-canvas,
+.canvas {
+  grid-area: canvas;
+  background-color: var(--color-white);
+  overflow: auto;
+  position: relative;
+}
+
+/* Inspector */
+.shell-inspector {
+  grid-area: inspector;
+  background-color: var(--color-white);
+  border-left: 1px solid var(--color-border);
+  overflow-y: auto;
+  min-width: var(--shell-inspector-width-min);
+  max-width: var(--shell-inspector-width-max);
+  resize: horizontal;
+  z-index: var(--z-base);
+}
+
+/* Chat Panel - Sidebar area (canvas mode) or chat area (code mode) */
+.chat-panel {
+  grid-area: sidebar;
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  z-index: var(--z-base);
+  width: 320px;
+  min-width: 280px;
+  max-width: 600px;
+}
+
+/* Chat panel in code mode uses chat grid area */
+.shell[data-view-mode='code'] .chat-panel {
+  grid-area: chat;
+}
+
+/* File Explorer Sidebar - Uses sidebar area in code mode */
+.file-explorer-sidebar {
+  grid-area: sidebar;
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  z-index: var(--z-base);
+  width: 280px;
+  min-width: 240px;
+  max-width: 400px;
+}
+
+/* Code Panel - Takes canvas area in code mode */
+.code-panel {
+  grid-area: canvas;
+  background-color: var(--color-white);
+  overflow-y: auto;
+  z-index: var(--z-base);
+}
+
+/* Code Mode - Adjust grid to support chat + file explorer + code editor */
+.shell[data-view-mode='code'] {
+  grid-template-areas:
+    'topbar topbar topbar topbar topbar'
+    'leftrail chat sidebar canvas inspector';
+  grid-template-columns: var(--shell-left-rail-width) auto auto 1fr auto;
+}
+
+/* When chat is not open in code mode, collapse chat column */
+.shell[data-view-mode='code']:not(.shell--chat-open) {
+  grid-template-areas:
+    'topbar topbar topbar topbar'
+    'leftrail sidebar canvas inspector';
+  grid-template-columns: var(--shell-left-rail-width) auto 1fr auto;
+}
+
+/* Preview Mode - Hide shell UI */
+.shell[data-preview-mode='true'] .shell-topbar,
+.shell[data-preview-mode='true'] .shell-leftrail,
+.shell[data-preview-mode='true'] .shell-sidebar,
+.shell[data-preview-mode='true'] .shell-inspector {
+  display: none;
+}
+
+.shell[data-preview-mode='true'] {
+  grid-template-areas: 'canvas';
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+/* AI Training Mode - sidebar takes full width */
+.shell[data-ai-training-open='true'] {
+  grid-template-areas:
+    'topbar topbar'
+    'leftrail main';
+  grid-template-columns: var(--shell-left-rail-width) 1fr;
+  grid-template-rows: var(--shell-top-bar-height) 1fr;
+}
+
+/* Settings sidebar uses 'main' area in AI Training mode */
+.shell[data-ai-training-open='true'] .settings-sidebar {
+  grid-area: main;
+}
+
+/* Force hide code panel and canvas when AI Training is open to prevent visual artifacts */
+.shell[data-ai-training-open='true'] .code-panel,
+.shell[data-ai-training-open='true'] .canvas,
+.shell[data-ai-training-open='true'] .shell-canvas,
+.shell[data-ai-training-open='true'] .streaming-indicator {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Focus styles - Constitutional requirement */
+*:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-hover);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}

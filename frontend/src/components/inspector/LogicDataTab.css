@@ -1,0 +1,28 @@
+/**
+ * LogicDataTab Styles
+ */
+
+@import '../../styles/tokens.css';
+
+.logic-data-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.logic-data-tab__content {
+  flex: 1;
+  padding: var(--space-4);
+}
+
+.logic-data-tab__placeholder {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+.logic-data-tab__hint {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}

@@ -1,0 +1,98 @@
+/**
+ * Tab Styles - Constitutional compliance
+ */
+
+@import '../../styles/tokens.css';
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tabs__list {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs__list::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs__trigger {
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tabs__trigger:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.tabs__trigger[data-state='active'] {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+  background-color: var(--color-white);
+}
+
+.tabs__trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tabs__trigger:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: calc(var(--focus-outline-offset) * -1);
+}
+
+/* Low priority tabs - Advanced tab de-emphasis */
+.tabs__trigger[data-priority='low'] {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+.tabs__content {
+  flex: 1;
+  padding: var(--space-4);
+  overflow-y: auto;
+  outline: none;
+}
+
+.tabs__content:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Vertical orientation */
+.tabs[data-orientation='vertical'] {
+  flex-direction: row;
+}
+
+.tabs[data-orientation='vertical'] .tabs__list {
+  flex-direction: column;
+  border-bottom: none;
+  border-right: 1px solid var(--color-border);
+}
+
+.tabs[data-orientation='vertical'] .tabs__trigger {
+  border-bottom: none;
+  border-right: 2px solid transparent;
+  text-align: left;
+}
+
+.tabs[data-orientation='vertical'] .tabs__trigger[data-state='active'] {
+  border-right-color: var(--color-accent);
+}

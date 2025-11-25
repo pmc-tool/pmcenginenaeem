@@ -1,0 +1,82 @@
+/**
+ * SettingsTab Styles
+ */
+
+@import '../../styles/tokens.css';
+
+.settings-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.settings-tab__content {
+  flex: 1;
+  padding: var(--space-4);
+}
+
+.settings-tab__placeholder {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+.settings-tab__hint {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* New section styles */
+.settings-tab__section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.settings-tab__section:last-child {
+  border-bottom: none;
+}
+
+.settings-tab__section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 0.5rem 0;
+}
+
+.settings-tab__section-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.settings-tab__button {
+  padding: 0.75rem 1.5rem;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.settings-tab__button--primary {
+  background: #EA2724;
+  color: #fff;
+}
+
+.settings-tab__button--primary:hover {
+  background: #D91F1C;
+  box-shadow: 0 2px 4px rgba(234, 39, 36, 0.3);
+}
+
+.settings-tab__button--primary:active {
+  background: #C71E1B;
+}
+
+.settings-tab__button:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}

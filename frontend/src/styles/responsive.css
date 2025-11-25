@@ -1,0 +1,404 @@
+/**
+ * Responsive CSS - Breakpoint-specific styles
+ * Supports 320px-3840px viewport per constitutional requirements
+ */
+
+@import './tokens.css';
+
+/* Breakpoints
+ * Mobile: 320-767px
+ * Tablet: 768-1023px
+ * Desktop: 1024px+
+ * Large Desktop: 1440px+
+ */
+
+/* Mobile (< 768px) - Stacked layout */
+@media (max-width: 767px) {
+  .shell {
+    grid-template-areas:
+      'topbar'
+      'canvas';
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--shell-top-bar-height) 1fr;
+    overflow: hidden; /* Prevent horizontal scroll */
+  }
+
+  /* Left rail is handled by MobileDrawer component - no positioning needed here */
+  /* Bottom sheets (Inspector, Chat, Pages, Settings, Files) are handled by BottomSheet component */
+
+  /* Canvas takes full viewport on mobile */
+  .shell-canvas,
+  .canvas,
+  .code-panel {
+    grid-area: canvas;
+    width: 100%;
+    height: calc(100vh - var(--shell-top-bar-height));
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+
+  /* Hide inspector advanced features on mobile */
+  .inspector__tab[data-priority='low'] {
+    display: none;
+  }
+
+  /* Themes page full width on mobile */
+  .themes-page {
+    width: 100%;
+    padding: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Mobile-specific component styling */
+
+  /* Ensure mobile drawer takes full height and has proper overflow */
+  .mobile-drawer {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-x: visible !important;
+  }
+
+  /* Mobile drawer content needs full width and better spacing */
+  .mobile-drawer .leftrail {
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure labels are visible in mobile drawer */
+  .mobile-drawer .leftrail__label {
+    display: block !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  /* Make sure tabs don't clip content */
+  .mobile-drawer .leftrail__tab {
+    overflow: visible !important;
+  }
+
+  /* Bottom sheet panels should have full width content */
+  .bottom-sheet .pagesidebar,
+  .bottom-sheet .inspector,
+  .bottom-sheet .chat-panel,
+  .bottom-sheet .settings-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    position: static !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Remove resize handles on mobile */
+  .pagesidebar__resize-handle,
+  .chat-panel__resize-handle,
+  .inspector__resize-area {
+    display: none !important;
+  }
+
+  /* TopBar mobile adjustments */
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .topbar__left,
+  .topbar__center,
+  .topbar__right {
+    gap: 8px;
+  }
+
+  /* Mobile button sizing */
+  .topbar button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Tablet (768px - 1023px) - Condensed layout */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .shell {
+    grid-template-columns: var(--shell-left-rail-width) auto 1fr auto;
+  }
+
+  .shell-inspector {
+    width: var(--shell-inspector-width-min);
+    min-width: var(--shell-inspector-width-min);
+    resize: none;
+  }
+
+  .shell-sidebar[data-visible='true'] {
+    width: 240px;
+  }
+}
+
+/* Desktop (1024px+) - Full layout */
+@media (min-width: 1024px) {
+  .shell {
+    grid-template-columns: var(--shell-left-rail-width) auto 1fr auto;
+  }
+
+  .shell-inspector {
+    width: var(--shell-inspector-width-default);
+    resize: horizontal;
+  }
+}
+
+/* Large Desktop (1440px+) - Optimized spacing */
+@media (min-width: 1440px) {
+  .shell-sidebar[data-visible='true'] {
+    width: 320px;
+  }
+
+  .shell-inspector {
+    width: 400px;
+  }
+}
+
+/* Ultra-wide (2560px+) - Maximum spacing */
+@media (min-width: 2560px) {
+  .shell-sidebar[data-visible='true'] {
+    width: 360px;
+  }
+
+  .shell-inspector {
+    width: 480px;
+  }
+}
+
+/* Reduced motion preference - Constitutional accessibility requirement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .shell-sidebar {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --focus-outline-width: 3px;
+  }
+
+  .shell-topbar,
+  .shell-leftrail,
+  .shell-sidebar,
+  .shell-inspector {
+    border-color: var(--color-border);
+    border-width: 2px;
+  }
+}
+
+/* ========================================
+   Responsive Utility Classes
+   ======================================== */
+
+/* Visibility utilities */
+.hide-on-mobile {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-on-mobile {
+    display: revert !important;
+  }
+}
+
+.show-on-mobile-only {
+  display: revert !important;
+}
+
+@media (min-width: 768px) {
+  .show-on-mobile-only {
+    display: none !important;
+  }
+}
+
+.hide-on-desktop {
+  display: revert !important;
+}
+
+@media (min-width: 1024px) {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+/* Touch target utilities (WCAG 2.1 AAA) */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target-comfortable {
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-spacing {
+  gap: 8px;
+}
+
+/* Layout utilities */
+.stack-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .stack-mobile {
+    flex-direction: row;
+    gap: 16px;
+  }
+}
+
+.full-width-mobile {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .full-width-mobile {
+    width: auto;
+  }
+}
+
+/* Responsive typography */
+.text-page-title {
+  font-size: 1.25rem; /* 20px mobile */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .text-page-title {
+    font-size: 1.375rem; /* 22px tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-page-title {
+    font-size: 1.5rem; /* 24px desktop */
+  }
+}
+
+/* Prevent iOS zoom on input focus */
+.input-no-zoom {
+  font-size: 16px;
+}
+
+/* Scrolling utilities */
+.scroll-horizontal-mobile {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroll-horizontal-mobile::-webkit-scrollbar {
+  display: none;
+}
+
+.no-horizontal-scroll {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Interaction utilities */
+.no-tap-highlight {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.no-user-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* GPU-accelerated animations */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 250ms ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 250ms ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 250ms ease-out;
+}
+
+/* Accessibility utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus-visible-ring:focus-visible {
+  outline: 2px solid var(--color-focus, #EA2724);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

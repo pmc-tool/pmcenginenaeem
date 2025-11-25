@@ -1,0 +1,469 @@
+/**
+ * Mobile-Specific CSS Overrides
+ *
+ * Styles that apply ONLY on mobile devices (xs, sm breakpoints).
+ * These override default desktop styles for better mobile experience.
+ *
+ * Import this file after your main CSS:
+ * import './styles/responsive.css';
+ * import './styles/mobile.css';
+ */
+
+/* ========================================
+   Mobile-Only Overrides (≤768px)
+   ======================================== */
+
+@media (max-width: 767px) {
+  /* Body and root adjustments */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent text size adjustment after orientation change */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  /* Ensure no horizontal scroll on mobile */
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* ========================================
+     Form Elements
+     ======================================== */
+
+  /* All inputs: full width, minimum touch target height */
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='tel'],
+  input[type='url'],
+  input[type='search'],
+  input[type='number'],
+  textarea,
+  select {
+    width: 100%;
+    min-height: 44px;
+    font-size: 16px; /* Prevent iOS zoom on focus */
+    padding: 12px;
+    border-radius: 6px;
+  }
+
+  /* Textarea minimum height */
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  /* Select dropdown full width */
+  select {
+    appearance: none;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  /* Labels above inputs on mobile */
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* Form field groups stack vertically */
+  .form-field,
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  /* Error messages inline below fields */
+  .error-message,
+  .field-error {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--color-error, #EF4444);
+  }
+
+  /* ========================================
+     Buttons
+     ======================================== */
+
+  /* All buttons: minimum touch target size */
+  button,
+  .button,
+  [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  /* Primary buttons full width on mobile */
+  .button-primary,
+  button[type='submit'] {
+    width: 100%;
+  }
+
+  /* Button groups stack vertically */
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Icon-only buttons maintain square shape */
+  .button-icon {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ========================================
+     Tables
+     ======================================== */
+
+  /* Tables: horizontal scroll or stacked cards */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  /* Table cells: increase padding for touch */
+  td,
+  th {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  /* Alternative: Stack table rows as cards */
+  .table-stacked {
+    display: block;
+  }
+
+  .table-stacked thead {
+    display: none;
+  }
+
+  .table-stacked tbody,
+  .table-stacked tr {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .table-stacked td {
+    display: block;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+  }
+
+  .table-stacked td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--color-text-secondary, #666);
+  }
+
+  /* ========================================
+     Navigation
+     ======================================== */
+
+  /* Navigation items: full width touch targets */
+  nav a,
+  nav button,
+  .nav-item {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 16px;
+    text-decoration: none;
+  }
+
+  /* Bottom navigation bar (if used) */
+  .nav-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    background: var(--color-background, #fff);
+    border-top: 1px solid var(--color-border, #e5e5e5);
+    padding: 8px 0;
+    z-index: var(--z-fixed, 1200);
+  }
+
+  .nav-bottom-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    font-size: 12px;
+  }
+
+  /* ========================================
+     Modals and Dialogs
+     ======================================== */
+
+  /* Modals: full screen on mobile */
+  .modal,
+  .dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+    overflow-y: auto;
+  }
+
+  /* Modal content padding */
+  .modal-content,
+  .dialog-content {
+    padding: 16px;
+  }
+
+  /* Modal header with close button */
+  .modal-header,
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border, #e5e5e5);
+  }
+
+  /* Modal footer: stacked buttons */
+  .modal-footer,
+  .dialog-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid var(--color-border, #e5e5e5);
+  }
+
+  /* Bottom sheet variant (slides up from bottom) */
+  .bottom-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Drawer variant (slides in from side) */
+  .drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    overflow-y: auto;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .drawer-left {
+    left: 0;
+  }
+
+  .drawer-right {
+    right: 0;
+  }
+
+  /* ========================================
+     Tooltips and Popovers
+     ======================================== */
+
+  /* Convert hover tooltips to tap-to-show */
+  .tooltip {
+    display: none; /* Hide hover tooltips on mobile */
+  }
+
+  /* Alternative: Use bottom sheets for tooltip content */
+  .tooltip-mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-background, #fff);
+    border-top: 1px solid var(--color-border, #e5e5e5);
+    padding: 16px;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ========================================
+     Lists and Cards
+     ======================================== */
+
+  /* List items: larger touch targets */
+  .list-item,
+  li {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  /* Cards: full width with spacing */
+  .card {
+    width: 100%;
+    margin-bottom: 16px;
+    border-radius: 8px;
+  }
+
+  .card-content {
+    padding: 16px;
+  }
+
+  /* ========================================
+     Images and Media
+     ======================================== */
+
+  /* Images: responsive by default */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Video: responsive with aspect ratio */
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Aspect ratio container for embedded media */
+  .aspect-ratio-16-9 {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 */
+  }
+
+  .aspect-ratio-16-9 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ========================================
+     Typography
+     ======================================== */
+
+  /* Headings: smaller on mobile */
+  h1 {
+    font-size: 1.75rem; /* 28px */
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  h4 {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  /* Body text: readable size */
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  /* Code blocks: horizontal scroll */
+  pre,
+  code {
+    font-size: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ========================================
+     Spacing Adjustments
+     ======================================== */
+
+  /* Reduce section padding on mobile */
+  section {
+    padding: 16px;
+  }
+
+  /* Tighter spacing between elements */
+  .spacing-tight {
+    gap: 8px;
+  }
+
+  .spacing-normal {
+    gap: 12px;
+  }
+
+  .spacing-loose {
+    gap: 16px;
+  }
+
+  /* ========================================
+     Safe Areas (for notched devices)
+     ======================================== */
+
+  /* Support iPhone notch and home indicator */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Fixed elements should respect safe areas */
+  .fixed-top {
+    top: env(safe-area-inset-top);
+  }
+
+  .fixed-bottom {
+    bottom: env(safe-area-inset-bottom);
+  }
+}

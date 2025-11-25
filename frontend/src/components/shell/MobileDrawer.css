@@ -1,0 +1,90 @@
+/**
+ * MobileDrawer CSS - Drawer Overlay Styling
+ *
+ * Implements slide-in drawer pattern for mobile navigation with:
+ * - Full-screen backdrop overlay
+ * - 280px width drawer from left
+ * - GPU-accelerated animations (transform, opacity)
+ * - Touch-friendly interactions
+ */
+
+/* Backdrop overlay - covers entire screen */
+.mobile-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-drawer, 1060);
+  animation: fadeIn 250ms ease-out;
+}
+
+/* Drawer container - slides in from left */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  min-width: 280px;
+  max-width: 85vw; /* Don't take entire screen width */
+  background-color: var(--color-white, #ffffff);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  overflow-x: visible; /* Allow content to be visible */
+  -webkit-overflow-scrolling: touch;
+  animation: slideInLeft 250ms ease-out;
+  z-index: calc(var(--z-drawer, 1060) + 1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smooth scrolling on iOS */
+.mobile-drawer {
+  overscroll-behavior: contain;
+}
+
+/* GPU-accelerated slide-in animation */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Backdrop fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Ensure drawer content doesn't exceed viewport */
+.mobile-drawer > * {
+  max-width: 100%;
+}
+
+/* Reduced motion preference - instant transitions */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-drawer-overlay,
+  .mobile-drawer {
+    animation-duration: 0.01ms !important;
+  }
+
+  .mobile-drawer {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode - stronger borders */
+@media (prefers-contrast: high) {
+  .mobile-drawer {
+    border-right: 2px solid var(--color-border, #000000);
+  }
+}

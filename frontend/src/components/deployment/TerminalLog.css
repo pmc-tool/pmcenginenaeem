@@ -1,0 +1,102 @@
+/* TerminalLog Styles - Feature: 006-themes-and-deploy */
+
+.terminal-log {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border, #E0E0E0);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.terminal-log__header {
+  padding: 12px 16px;
+  background: var(--color-background, #F5F5F5);
+  border-bottom: 1px solid var(--color-border, #E0E0E0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.terminal-log__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #000000);
+}
+
+.terminal-log__log-count {
+  font-size: 13px;
+  color: var(--color-text-tertiary, #999999);
+  font-weight: normal;
+}
+
+.terminal-log__content {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.terminal-log__lines {
+  padding: 12px 0;
+}
+
+.terminal-log__line {
+  display: flex;
+  padding: 2px 16px;
+  transition: background 0.15s ease;
+}
+
+.terminal-log__line:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.terminal-log__line-number {
+  width: 40px;
+  flex-shrink: 0;
+  color: #6b7280;
+  user-select: none;
+  text-align: right;
+  margin-right: 16px;
+}
+
+.terminal-log__line-text {
+  flex: 1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Error lines */
+.terminal-log__line--error {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.terminal-log__line--error .terminal-log__line-text {
+  color: #fca5a5;
+}
+
+/* Success lines */
+.terminal-log__line--success .terminal-log__line-text {
+  color: #86efac;
+}
+
+/* Scrollbar styling */
+.terminal-log__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-log__content::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.terminal-log__content::-webkit-scrollbar-thumb {
+  background: #4b4b4b;
+  border-radius: 4px;
+}
+
+.terminal-log__content::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}

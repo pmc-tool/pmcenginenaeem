@@ -1,0 +1,139 @@
+/**
+ * FileExplorerSidebar Styles
+ * Positioned in the shell grid's sidebar area
+ */
+
+.file-explorer-sidebar {
+  /* Inherits grid positioning from .shell-sidebar */
+  /* No additional positioning needed - uses grid area */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  transition: width 0.3s ease-out;
+}
+
+/* Collapsed state - narrow width showing only icons */
+.file-explorer-sidebar[data-collapsed='true'] {
+  width: 48px !important;
+  min-width: 48px;
+}
+
+/* Expanded state - full width */
+.file-explorer-sidebar[data-collapsed='false'] {
+  width: var(--shell-page-sidebar-width);
+}
+
+/* Header with collapse toggle */
+.file-explorer-sidebar__header {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 40px;
+}
+
+/* Toggle button */
+.file-explorer-sidebar__toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.file-explorer-sidebar__toggle:hover {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.file-explorer-sidebar__toggle:focus-visible {
+  outline: 2px solid var(--focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* Title */
+.file-explorer-sidebar__title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+  text-transform: uppercase;
+}
+
+/* Content area (file tree) */
+.file-explorer-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+/* Icon view when collapsed */
+.file-explorer-sidebar__icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  gap: 8px;
+}
+
+.file-explorer-sidebar__icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 20px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-explorer-sidebar__icon:hover {
+  background-color: var(--color-background);
+}
+
+.file-explorer-sidebar__icon:focus-visible {
+  outline: 2px solid var(--focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* Resize Handle */
+.file-explorer-sidebar__resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+  z-index: 10;
+}
+
+.file-explorer-sidebar__resize-handle:hover {
+  background-color: rgba(234, 39, 36, 0.1);
+}
+
+.file-explorer-sidebar__resize-handle:active {
+  background-color: rgba(234, 39, 36, 0.2);
+}
+
+.file-explorer-sidebar__resize-handle:focus-visible {
+  outline: 2px solid var(--focus-outline-color);
+  outline-offset: -2px;
+}
+
+/* Position file explorer sidebar relative so resize handle is positioned correctly */
+.file-explorer-sidebar {
+  position: relative;
+}

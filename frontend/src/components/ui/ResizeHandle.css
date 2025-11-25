@@ -1,0 +1,82 @@
+/**
+ * ResizeHandle Styles
+ * Constitutional compliance: 8px spacing, 2px focus outlines, WCAG AA
+ */
+
+@import '../../styles/tokens.css';
+
+.resize-handle {
+  position: relative;
+  background-color: transparent;
+  transition: background-color var(--transition-fast);
+  z-index: 10;
+}
+
+.resize-handle:hover {
+  background-color: var(--color-border);
+}
+
+.resize-handle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.resize-handle--dragging {
+  background-color: var(--color-accent);
+}
+
+/* Vertical orientation (for left-right resizing) */
+.resize-handle--vertical {
+  width: 4px;
+  height: 100%;
+  cursor: ew-resize;
+}
+
+/* Horizontal orientation (for top-bottom resizing) */
+.resize-handle--horizontal {
+  width: 100%;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+/* Visual indicator */
+.resize-handle__indicator {
+  position: absolute;
+  background-color: var(--color-border);
+  transition: background-color var(--transition-fast);
+}
+
+.resize-handle--vertical .resize-handle__indicator {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 32px;
+  border-radius: 1px;
+}
+
+.resize-handle--horizontal .resize-handle__indicator {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.resize-handle:hover .resize-handle__indicator,
+.resize-handle:focus-visible .resize-handle__indicator {
+  background-color: var(--color-accent);
+}
+
+.resize-handle--dragging .resize-handle__indicator {
+  background-color: var(--color-white);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .resize-handle,
+  .resize-handle__indicator {
+    transition: none;
+  }
+}

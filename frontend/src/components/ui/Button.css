@@ -1,0 +1,153 @@
+/**
+ * Button Styles - Constitutional design tokens
+ */
+
+@import '../../styles/tokens.css';
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Sizes */
+.button--sm {
+  height: 28px;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-tight);
+}
+
+.button--md {
+  height: 36px;
+  padding: 0 var(--space-4);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.button--lg {
+  height: 44px;
+  padding: 0 var(--space-6);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+}
+
+/* Variants */
+.button--primary {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+.button--primary:hover:not(:disabled) {
+  background-color: #d11f1c;
+  box-shadow: var(--shadow-sm);
+}
+
+.button--primary:active:not(:disabled) {
+  background-color: #b81a17;
+}
+
+.button--secondary {
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background-color: var(--color-background);
+  border-color: var(--color-border-hover);
+}
+
+.button--secondary:active:not(:disabled) {
+  background-color: #e8e8e8;
+}
+
+.button--ghost {
+  background-color: transparent;
+  color: var(--color-text-primary);
+}
+
+.button--ghost:hover:not(:disabled) {
+  background-color: var(--color-background);
+}
+
+.button--ghost:active:not(:disabled) {
+  background-color: #e8e8e8;
+}
+
+.button--danger {
+  background-color: var(--color-error);
+  color: var(--color-white);
+}
+
+.button--danger:hover:not(:disabled) {
+  background-color: #dc2626;
+  box-shadow: var(--shadow-sm);
+}
+
+.button--danger:active:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+/* States */
+.button:disabled,
+.button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button--loading {
+  cursor: wait;
+}
+
+/* Focus state - Constitutional requirement */
+.button:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Icon spacing */
+.button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button__icon--left {
+  margin-right: calc(var(--space-2) * -0.5);
+}
+
+.button__icon--right {
+  margin-left: calc(var(--space-2) * -0.5);
+}
+
+/* Loading spinner */
+.button__spinner {
+  display: inline-flex;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .button__spinner {
+    animation: none;
+  }
+}

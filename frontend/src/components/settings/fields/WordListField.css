@@ -1,0 +1,200 @@
+/**
+ * Word List Field Styles
+ * Feature: 005-basic-ai-training
+ */
+
+.word-list-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.word-list-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+/* Input Wrapper */
+.word-list-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.word-list-input {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  font-size: 14px;
+  border: 1px solid #E0E0E0;
+  border-radius: 0.375rem;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.word-list-input::placeholder {
+  color: #999;
+}
+
+.word-list-input:focus {
+  outline: none;
+  border-color: #EA2724;
+  box-shadow: 0 0 0 3px rgba(234, 39, 36, 0.1);
+}
+
+.word-list-input.error {
+  border-color: #EF4444;
+}
+
+.word-list-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Add Button */
+.btn-add-word {
+  padding: 0.625rem 1rem;
+  font-size: 14px;
+  font-weight: 500;
+  color: #EA2724;
+  background: #fff;
+  border: 1px solid #EA2724;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-add-word:hover {
+  background: #FFF5F5;
+  border-color: #D91F1C;
+}
+
+.btn-add-word:active {
+  background: #FFEBEB;
+}
+
+.btn-add-word:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+/* Tags Display */
+.word-list-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #FAFAFA;
+  border: 1px solid #E0E0E0;
+  border-radius: 0.375rem;
+  min-height: 60px;
+}
+
+.word-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: #fff;
+  border: 1px solid #E0E0E0;
+  border-radius: 0.25rem;
+  font-size: 13px;
+  color: #1A1A1A;
+  transition: all 0.15s ease;
+}
+
+.word-tag:hover {
+  border-color: #EA2724;
+  background: #FFF5F5;
+}
+
+.word-tag-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.word-tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: #F5F5F5;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.word-tag-remove:hover {
+  background: #EA2724;
+  color: #fff;
+}
+
+.word-tag-remove:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 1px;
+}
+
+/* Empty State */
+.word-list-empty {
+  padding: 1rem;
+  text-align: center;
+  font-size: 13px;
+  color: #999;
+  background: #FAFAFA;
+  border: 1px dashed #E0E0E0;
+  border-radius: 0.375rem;
+}
+
+/* Count Display */
+.word-list-count {
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}
+
+/* Helper Text & Errors */
+.word-list-field .helper-text {
+  font-size: 12px;
+  color: #999;
+  line-height: 1.4;
+}
+
+.word-list-field .error-message {
+  font-size: 12px;
+  color: #EF4444;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .word-list-input-wrapper {
+    flex-direction: column;
+  }
+
+  .btn-add-word {
+    width: 100%;
+  }
+
+  .word-tag-text {
+    max-width: 150px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .word-list-input,
+  .btn-add-word,
+  .word-tag,
+  .word-tag-remove {
+    transition: none;
+  }
+}

@@ -1,0 +1,177 @@
+/**
+ * Contact Section Styles
+ * Feature: 005-basic-ai-training
+ */
+
+/* Social Links Header */
+.social-links-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.social-links-header label {
+  margin: 0;
+}
+
+.btn-add-social {
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: #EA2724;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-social:hover {
+  background: #D91F1C;
+  box-shadow: 0 2px 4px rgba(234, 39, 36, 0.3);
+}
+
+.btn-add-social:active {
+  background: #C71E1B;
+}
+
+.btn-add-social:disabled {
+  background: #CCC;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-add-social:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+/* Empty State */
+.social-links-empty {
+  padding: 2rem;
+  text-align: center;
+  background: #FAFAFA;
+  border: 2px dashed #E0E0E0;
+  border-radius: 0.5rem;
+  color: #666;
+}
+
+.social-links-empty p {
+  margin: 0.5rem 0;
+  font-size: 14px;
+}
+
+.social-links-empty .helper-text {
+  font-size: 13px;
+  color: #999;
+}
+
+/* Social Links List */
+.social-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Social Link Item */
+.social-link-item {
+  background: #F5F5F5;
+  border: 1px solid #E0E0E0;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  transition: border-color 0.15s ease;
+}
+
+.social-link-item:hover {
+  border-color: #EA2724;
+}
+
+.social-link-fields {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.social-link-fields .form-field {
+  margin: 0;
+}
+
+.social-link-fields .form-field label {
+  font-size: 12px;
+  margin-bottom: 0.25rem;
+}
+
+.social-link-fields .form-field input,
+.social-link-fields .form-field select {
+  font-size: 13px;
+  padding: 0.5rem 0.625rem;
+}
+
+.btn-remove-social {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin-top: 24px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: #DC2626;
+  background: #fff;
+  border: 1px solid #DC2626;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-remove-social:hover {
+  background: #FEF2F2;
+}
+
+.btn-remove-social:focus-visible {
+  outline: 2px solid #DC2626;
+  outline-offset: 2px;
+}
+
+/* Social Links Count */
+.social-links-count {
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .social-links-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .btn-add-social {
+    width: 100%;
+  }
+
+  .social-link-fields {
+    flex-direction: column;
+  }
+
+  .social-link-fields .form-field {
+    width: 100%;
+  }
+
+  .btn-remove-social {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-add-social,
+  .social-link-item,
+  .btn-remove-social {
+    transition: none;
+  }
+}

@@ -1,0 +1,48 @@
+/**
+ * SkipLinks Styles
+ * Constitutional requirement: Only visible on keyboard focus
+ */
+
+@import '../../styles/tokens.css';
+
+.skip-links {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.skip-links__link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  transition: top var(--transition-fast);
+  white-space: nowrap;
+}
+
+.skip-links__link:focus {
+  position: absolute;
+  top: var(--space-2);
+  outline: var(--focus-outline-width) solid var(--color-white);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.skip-links__link:focus:not(:first-child) {
+  top: calc(var(--space-2) + 40px);
+}
+
+.skip-links__link:focus:nth-child(3) {
+  top: calc(var(--space-2) + 80px);
+}

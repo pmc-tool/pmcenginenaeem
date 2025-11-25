@@ -1,0 +1,162 @@
+/**
+ * OperationLog Styles
+ * Progressive operation log rendering with status indicators and "View change" links
+ * Constitutional palette: #EA2724 (accent), grays for status indicators
+ * Feature: 002-chat-panel
+ */
+
+.operation-log {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem auto;
+  max-width: 90%;
+  border-radius: 0.5rem;
+  background-color: #FAFAFA;
+  animation: log-fade-in 0.2s ease-out;
+}
+
+@keyframes log-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status-specific styles */
+.operation-log--pending {
+  /* No additional styling needed */
+}
+
+.operation-log--running {
+  /* Subtle animation for running state */
+}
+
+.operation-log--success {
+  /* Completed state */
+}
+
+.operation-log--error {
+  background-color: #FFF5F5;
+}
+
+/* Status Indicator */
+.operation-log__status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.125rem;
+}
+
+.operation-log__status-icon {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.operation-log--running .operation-log__status-icon {
+  animation: rotate-icon 2s linear infinite;
+}
+
+@keyframes rotate-icon {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Log Messages Container */
+.operation-log__messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Individual Log Message */
+.operation-log__message {
+  color: #666;
+}
+
+.operation-log__message--latest {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.operation-log--error .operation-log__message {
+  color: #D32F2F;
+}
+
+.operation-log--error .operation-log__message--latest {
+  color: #C62828;
+  font-weight: 600;
+}
+
+/* View Change Link */
+.operation-log__view-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: none;
+  border: 1px solid #EA2724;
+  border-radius: 0.25rem;
+  color: #EA2724;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.operation-log__view-change:hover {
+  background-color: #EA2724;
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.operation-log__view-change:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+.operation-log__view-change:active {
+  transform: translateX(4px);
+}
+
+/* Accessibility - ensure screen readers announce status changes */
+.operation-log[role="log"] {
+  /* aria-live="polite" should be added via JS for running operations */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .operation-log,
+  .operation-log__view-change {
+    animation: none;
+    transition: none;
+  }
+
+  .operation-log--running .operation-log__status-icon {
+    animation: none;
+  }
+
+  .operation-log--running {
+    animation: log-fade-in 0.2s ease-out;
+  }
+
+  .operation-log__view-change:hover,
+  .operation-log__view-change:active {
+    transform: none;
+  }
+}

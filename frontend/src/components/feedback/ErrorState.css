@@ -1,0 +1,125 @@
+/**
+ * ErrorState Component Styles
+ */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error-state__icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.error-state__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #991B1B;
+  line-height: 1.4;
+}
+
+.error-state__message {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.error-state__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.error-state__retry {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  background: #EA2724;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.error-state__retry:hover {
+  background: #D01F1C;
+}
+
+.error-state__retry:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+.error-state__toggle-details {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666666;
+  background: transparent;
+  border: 1px solid #E5E5E5;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.error-state__toggle-details:hover {
+  background: #F5F5F5;
+  border-color: #D0D0D0;
+}
+
+.error-state__toggle-details:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+.error-state__details {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #F5F5F5;
+  border: 1px solid #E5E5E5;
+  border-radius: 0.375rem;
+  text-align: left;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  color: #666666;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  line-height: 1.4;
+}
+
+.error-state__details code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .error-state {
+    padding: 2rem 1rem;
+  }
+
+  .error-state__icon {
+    font-size: 2.5rem;
+  }
+
+  .error-state__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .error-state__retry,
+  .error-state__toggle-details {
+    width: 100%;
+  }
+}

@@ -1,0 +1,115 @@
+/**
+ * DraggablePromptPanel Styles
+ * Bottom sheet-style draggable panel with smooth transitions
+ * Apple Maps / Google Maps inspired
+ * Feature: 002-chat-panel
+ */
+
+.draggable-prompt-panel {
+  position: relative;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: height 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  will-change: height;
+}
+
+/* Dragging state - disable transition for immediate feedback */
+.draggable-prompt-panel--dragging {
+  transition: none;
+}
+
+/* Drag Handle */
+.draggable-prompt-panel__handle {
+  position: relative;
+  width: 100%;
+  padding: 0.5rem 0;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.draggable-prompt-panel__handle:active {
+  cursor: grabbing;
+}
+
+.draggable-prompt-panel__handle-bar {
+  width: 36px;
+  height: 4px;
+  background-color: #d0d0d0;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.draggable-prompt-panel__handle:hover .draggable-prompt-panel__handle-bar {
+  background-color: #b0b0b0;
+}
+
+.draggable-prompt-panel__handle:active .draggable-prompt-panel__handle-bar {
+  background-color: #EA2724;
+}
+
+/* Content Area */
+.draggable-prompt-panel__content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.draggable-prompt-panel__chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Fade in animation for chips */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* State-specific styles */
+.draggable-prompt-panel--full {
+  /* Full height - shows 4 buttons */
+}
+
+.draggable-prompt-panel--medium {
+  /* Medium height - shows 2 buttons */
+}
+
+.draggable-prompt-panel--collapsed {
+  /* Collapsed - shows 0 buttons, just the handle */
+}
+
+/* Focus styles for accessibility */
+.draggable-prompt-panel__handle:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: -2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .draggable-prompt-panel {
+    transition: none;
+  }
+
+  .draggable-prompt-panel__chips {
+    animation: none;
+  }
+}

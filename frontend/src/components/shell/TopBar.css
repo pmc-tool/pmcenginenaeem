@@ -1,0 +1,290 @@
+/**
+ * TopBar Styles - Constitutional compliance
+ */
+
+@import '../../styles/tokens.css';
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+  height: var(--shell-top-bar-height);
+  gap: var(--space-4);
+}
+
+.topbar__left,
+.topbar__center,
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.topbar__left {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar__center {
+  flex-shrink: 0;
+}
+
+.topbar__right {
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* Logo */
+.topbar__logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Site Name */
+.topbar__site-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar__site-name:hover {
+  background-color: var(--color-background);
+}
+
+.topbar__site-name:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.topbar__site-name-input {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  max-width: 300px;
+  outline: none;
+}
+
+/* Save Status */
+.topbar__save-status {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.topbar__save-status--saving {
+  color: var(--color-info);
+}
+
+.topbar__save-status--saved {
+  color: var(--color-success);
+}
+
+.topbar__save-status--failed {
+  color: var(--color-error);
+}
+
+/* AI Credits */
+.topbar__credits {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background);
+  white-space: nowrap;
+}
+
+.topbar__credits--low {
+  background-color: #fff7ed;
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+}
+
+.topbar__credits-icon {
+  font-size: var(--font-size-base);
+  line-height: 1;
+}
+
+.topbar__credits-count {
+  font-weight: var(--font-weight-medium);
+}
+
+.topbar__credits-icon-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.topbar__credits-icon-only:hover {
+  background-color: var(--color-background);
+}
+
+.topbar__credits-icon-only.topbar__credits--low {
+  color: var(--color-warning);
+  background-color: #fff7ed;
+}
+
+.topbar__credits-icon-only:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* View Mode Toggle */
+.topbar__view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-background);
+  border-radius: var(--radius-md);
+  padding: 2px;
+  gap: 2px;
+}
+
+.topbar__view-toggle-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.topbar__view-toggle-option:hover {
+  color: var(--color-text-primary);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.topbar__view-toggle-option--active {
+  color: var(--color-accent);
+  background-color: var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.topbar__view-toggle-option:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Help Button */
+.topbar__help-button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  border-radius: 50%;
+}
+
+/* Hamburger Menu (Mobile Only) */
+.topbar__hamburger {
+  display: none; /* Hidden on desktop */
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.topbar__hamburger:hover {
+  background-color: var(--color-background);
+}
+
+.topbar__hamburger:active {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.topbar__hamburger:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.topbar__hamburger svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .topbar {
+    padding: 0 var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .topbar__left,
+  .topbar__center,
+  .topbar__right {
+    gap: var(--space-2);
+  }
+
+  /* Show hamburger menu on mobile */
+  .topbar__hamburger {
+    display: flex;
+  }
+
+  /* Hide save status on mobile */
+  .topbar__save-status {
+    display: none;
+  }
+
+  /* Show only icon for AI credits on mobile */
+  .topbar__credits-count {
+    display: none;
+  }
+
+  /* Truncate site name on mobile */
+  .topbar__site-name,
+  .topbar__site-name-input {
+    max-width: 150px;
+  }
+
+  /* Compact view mode toggle on mobile - icon only */
+  .topbar__view-toggle-option {
+    padding: var(--space-2);
+    min-width: 44px;
+    justify-content: center;
+  }
+}

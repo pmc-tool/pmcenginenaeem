@@ -1,0 +1,201 @@
+/**
+ * BottomAIPanel Styles
+ * Unified draggable bottom sheet with header + suggestions
+ * Apple Maps / Google Maps inspired
+ * Feature: 002-chat-panel
+ */
+
+.bottom-ai-panel {
+  position: relative;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: height 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  will-change: height;
+  padding: 0 1rem 1.5rem 1rem;
+}
+
+/* Dragging state - disable transition for immediate feedback */
+.bottom-ai-panel--dragging {
+  transition: none;
+}
+
+/* Drag Handle (at top edge) */
+.bottom-ai-panel__handle {
+  position: relative;
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding: 0.5rem 0;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bottom-ai-panel__handle:active {
+  cursor: grabbing;
+}
+
+.bottom-ai-panel__handle-bar {
+  width: 36px;
+  height: 4px;
+  background-color: #d0d0d0;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.bottom-ai-panel__handle:hover .bottom-ai-panel__handle-bar {
+  background-color: #b0b0b0;
+}
+
+.bottom-ai-panel__handle:active .bottom-ai-panel__handle-bar {
+  background-color: #EA2724;
+}
+
+/* Header Row (Scope + Context) */
+.bottom-ai-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  min-height: 2.5rem;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* Context Chip */
+.bottom-ai-panel__context {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bottom-ai-panel__context-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.bottom-ai-panel__context-value {
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Prompt Suggestions (2×2 grid) */
+.bottom-ai-panel__suggestions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.bottom-ai-panel__prompt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  background-color: #F5F5F5;
+  border: 1px solid #E0E0E0;
+  border-radius: 0.5rem;
+  color: #333;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bottom-ai-panel__prompt-btn:hover:not(:disabled) {
+  background-color: #ECECEC;
+  border-color: #D0D0D0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-ai-panel__prompt-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-ai-panel__prompt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #F5F5F5;
+  border-color: #E0E0E0;
+  color: #999;
+}
+
+.bottom-ai-panel__prompt-btn:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+/* Fade in animation for suggestions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus styles for accessibility */
+.bottom-ai-panel__handle:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: -2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-ai-panel {
+    transition: none;
+  }
+
+  .bottom-ai-panel__suggestions {
+    animation: none;
+  }
+
+  .bottom-ai-panel__prompt-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .bottom-ai-panel__prompt-btn:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .bottom-ai-panel__suggestions {
+    gap: 0.375rem;
+  }
+
+  .bottom-ai-panel__prompt-btn {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}

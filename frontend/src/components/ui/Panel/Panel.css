@@ -1,0 +1,143 @@
+/**
+ * Panel Component Styles
+ */
+
+.panel {
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.15s ease;
+}
+
+/* Header */
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #E5E5E5;
+  background: #FAFAFA;
+  transition: background 0.15s ease;
+}
+
+.panel--collapsed .panel__header {
+  border-bottom: none;
+}
+
+.panel__header--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.panel__header--clickable:hover {
+  background: #F5F5F5;
+}
+
+.panel__header--clickable:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: -2px;
+}
+
+.panel__header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.panel__header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  line-height: 1.4;
+}
+
+.panel__subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #666666;
+  line-height: 1.4;
+}
+
+.panel__collapse-icon {
+  font-size: 0.75rem;
+  color: #666666;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.panel__actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* Content */
+.panel__content {
+  background: #FFFFFF;
+  animation: panelContentSlideDown 0.2s ease-out;
+}
+
+@keyframes panelContentSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Padding variants */
+.panel__content--padding-none {
+  padding: 0;
+}
+
+.panel__content--padding-sm {
+  padding: 0.75rem 1.5rem;
+}
+
+.panel__content--padding-md {
+  padding: 1rem 1.5rem;
+}
+
+.panel__content--padding-lg {
+  padding: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .panel__header {
+    padding: 0.875rem 1rem;
+  }
+
+  .panel__content--padding-sm {
+    padding: 0.75rem 1rem;
+  }
+
+  .panel__content--padding-md {
+    padding: 1rem;
+  }
+
+  .panel__content--padding-lg {
+    padding: 1.25rem 1rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .panel__content {
+    animation: none;
+  }
+}

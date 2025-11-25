@@ -1,0 +1,77 @@
+/**
+ * Card Component Styles
+ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+/* Variants */
+.card--default {
+  background: #F5F5F5;
+  border: none;
+}
+
+.card--outlined {
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+}
+
+.card--elevated {
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Padding */
+.card--padding-none {
+  padding: 0;
+}
+
+.card--padding-sm {
+  padding: 0.75rem;
+}
+
+.card--padding-md {
+  padding: 1rem;
+}
+
+.card--padding-lg {
+  padding: 1.5rem;
+}
+
+/* Clickable state */
+.card--clickable {
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  width: 100%;
+}
+
+.card--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.card--clickable:active {
+  transform: translateY(0);
+}
+
+.card--clickable:focus-visible {
+  outline: 2px solid #EA2724;
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .card--clickable:hover {
+    transform: none;
+  }
+}
